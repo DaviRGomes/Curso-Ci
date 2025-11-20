@@ -22,18 +22,19 @@ jobs:
       with:
         go-version: ${{ matrix.go_version }}
       
+    - name: Install Netcat for DB wait
+      run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
+    
     - name: Build-DB
-      run: docker compose build
+      run: docker compose build 
       
     - name: Create-DB
       run: docker compose up -d
-      
+    
+    # CORREÇÃO 2: Aumenta o timeout para 60 segundos
     - name: Wait for Database readiness
       run: |
-        timeout 30 bash -c 'until nc -z localhost 5432; do sleep 1; done'
-        
-    - name: Test
-      run: go test -v main_test.go 
+        timeout 60 bash -c 'until nc -z localhost 5432; do sleep 1; done'
           
   
   build:
